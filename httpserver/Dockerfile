@@ -1,9 +1,15 @@
-FROM ubuntu
-ENV MY_SERVICE_PORT=80
-ENV MY_SERVICE_PORT1=80
-ENV MY_SERVICE_PORT2=80
-ENV MY_SERVICE_PORT3=80
-LABEL multi.label1="value1" multi.label2="value2" other="value3"
-ADD bin/amd64/httpserver /httpserver
+FROM golang:1.14 as builder
+ENV GO111MODULE=on \
+    GOPROXY=https://goproxy.cn,direct
+WORKDIR /app
+COPY . .
+RUN GOOS=linux GOARCH=amd64 go build .
+RUN mkdir publish && cp ./ publish
+FROM scratch
+WORKDIR /app
+
+COPY --from=builder /app/publish .
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert
+ENV PORT=80
 EXPOSE 80
-ENTRYPOINT /httpserver
+ENTRYPOINT ["./httpserver"]

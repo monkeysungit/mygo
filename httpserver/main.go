@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "net/http/pprof"
 
@@ -29,8 +30,12 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("entering root handler " + r.URL.Path)
-	glog.V(2).Infof("Client IP [%s], returnCode [%s]", r.URL.Path, "200")
+	ip := r.Header.Get("X-REAL-IP")
+	if ip == "" {
+		ip = strings.Split(r.RemoteAddr, ":")[0]
+	}
+	fmt.Println("entering root handler " + ip)
+	glog.V(2).Infof("Client IP [%s], returnCode [%s]", ip, http.StatusOK)
 	w.WriteHeader(200)
 	user := r.URL.Query().Get("user")
 	if user != "" {

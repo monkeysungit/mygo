@@ -1,6 +1,6 @@
 export tag=v1.0
 root:
-	export ROOT=github.com/cncamp/golang
+	export ROOT=github.com/sunjc/golang
 
 build:
 	echo "building httpserver binary"
