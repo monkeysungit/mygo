@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s.sunjc.io/instance: httpserver
+    k8s.sunjc.io/name: httpserver
+    k8s.sunjc.io/version: 1.0.0
+  name: httpserver-deployment
+  namespace: httpserver
+spec:
+  minReadySeconds: 0
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s.sunjc.io/instance: httpserver
+      k8s.sunjc.io/name: httpserver
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        k8s.sunjc.io/instance: httpserver
+        k8s.sunjc.io/name: httpserver
+    spec:
+      containers:
+        - name: httpserver-deployment
+          image: k8s.sunjc.io/httpserver
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - [ "/bin/sh","-c","httpserver -s quit; while killall -0 httpserver; do sleep 1; done" ]
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          ports:
+            - containerPort: 80
+              hostPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 10254
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 90Mi

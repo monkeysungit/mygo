@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s.sunjc.io/instance: httpserver
+    k8s.sunjc.io/name: httpserver
+    k8s.sunjc.io/version: 1.0.0
+  name: httpserver-svc-ip
+  namespace: httpserver
+spec:
+  ports:
+    - appProtocol: https
+      name: https-webhook
+      port: 443
+      targetPort: webhook
+  selector:
+    k8s.sunjc.io/instance: httpserver
+    k8s.sunjc.io/name: httpserver
+  type: ClusterIP

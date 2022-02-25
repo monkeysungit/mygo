@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  labels:
+    k8s.sunjc.io/instance: httpserver
+    k8s.sunjc.io/name: httpserver
+    k8s.sunjc.io/version: 1.0.0
+  name: httpserver-ingress
+spec:
+  controller: k8s.io/httpserver
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+    - hosts:
+        - httpserver.com
+      secretName: httpserver-tls
+  rules:
+    - host: httpserver.com
+      http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
