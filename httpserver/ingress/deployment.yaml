@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: httpserver-deployment
-          image: k8s.sunjc.io/httpserver
+          image: k8s.sunjc.io/httpserver:1.0
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
