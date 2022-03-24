@@ -18,7 +18,7 @@ metadata:
 spec:
   tls:
     - hosts:
-        - httpserver.com
+        - httpserver.sunjc.io
       secretName: httpserver-tls
   rules:
     - host: httpserver.com
